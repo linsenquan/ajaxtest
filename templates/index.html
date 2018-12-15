@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="{% static 'jquery-3.3.1.js' %}"></script>
+    <script src="{% static 'ajax-setup.js' %}"></script>
+</head>
+<body>
+{#    {% csrf_token %}#}
+    <input type="text" name="i1" value="{{ i1 }}">+<input type="text" name="i2" value="{{ i2 }}">=<input type="text" name='i3' value="{{ i3 }}">
+    <button id="b1">计算</button>
+    <br>
+      <input type="text" name="i11" value="{{ i11 }}">+<input type="text" name="i22" value="{{ i22 }}">=<input type="text" name='i33' value="{{ i33 }}">
+    <button id="b2">计算</button>
+    <br>
+    <button id="b3">参数测试</button>
+    <br>
+    <input type="file" id="f1">
+    <button id="b4">上传</button>
+    <script>
+        $('#b1').click(function () {
+            $.ajax({
+                url:'/calc1/',
+                type:'post',
+                data:{
+                    i1:$("[name='i1']").val(),
+                    i2:$("[name='i2']").val(),
+                    csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
+                },
+                success:function (res) {
+                    {#res是返回的响应体#}
+                    {#console.log(res)#}
+                     $("[name='i3']").val(res)
+                }
+            })
+        });
+          $('#b2').click(function () {
+            $.ajax({
+                url:'/calc2/',
+                type:'post',
+                headers:{'X-csrftoken':$("[name='csrfmiddlewaretoken']").val()},
+                data:{
+                    i1:$("[name='i11']").val(),
+                    i2:$("[name='i22']").val(),
+                },
+                success:function (res) {
+                    {#res是返回的响应体#}
+                    {#console.log(res)#}
+                     $("[name='i33']").val(res)
+                }
+            })
+        });
+        $('#b3').click(function () {
+            $.ajax({
+                url:'/ajax_test/',
+                type:'post',
+                data:{
+                    {#hobby:['篮球','足球','排球']#}
+                    hobby:JSON.stringify(['篮球','足球','排球'])
+                },
+                success:function (res) {
+                    console.log(res)
+
+                },
+                error:function (res) {
+                    console.log(33);
+                    console.log(res)
+                }
+            })
+        });
+
+          $('#b4').click(function () {
+              form_obj = new FormData();
+              {#console.log($('#f1'));#}
+              {#jQuery.fn.init [input#f1]#}
+              {#0: input#f1#}
+              {#console.log($('#f1')[0].files);#}
+              {#FileList {0: File(54312), length: 1}#}
+              form_obj.append('f1',$('#f1')[0].files[0]);
+            $.ajax({
+                url:'/upload/',
+                type:'post',
+                data:form_obj,
+                processData:false,
+                {#停止ajax对文件的编码处理#}
+                contentType:false,
+                success:function (res) {
+                    console.log(res);
+                    if(res.status == 0){
+                        alert(res.msg);
+                    }
+
+                },
+            })
+        })
+    </script>
+</body>
+</html>
