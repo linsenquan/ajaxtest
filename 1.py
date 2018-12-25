@@ -1,1 +1,4 @@
 sdfsdf
+
+def index():
+    pass
